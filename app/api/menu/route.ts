@@ -7,20 +7,14 @@ export async function GET() {
       where: {
         active: true,
       },
-      orderBy: {
-        name: "asc",
-      },
     });
-
-    console.log("MENU:", menu);
 
     return NextResponse.json(menu);
   } catch (error) {
-    console.error(error);
+    console.error("Menu fetch error:", error);
 
-    return NextResponse.json(
-      { error: "Failed to load menu" },
-      { status: 500 }
-    );
+    return NextResponse.json([], {
+      status: 200,
+    });
   }
 }

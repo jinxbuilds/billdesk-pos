@@ -13,27 +13,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if device already exists
-    let device = await prisma.device.findUnique({
-      where: { id: deviceId },
+    const device = await prisma.device.upsert({
+      where: {
+        id: deviceId,
+      },
+      update: {
+        deviceName,
+        lastSeenAt: new Date(),
+      },
+      create: {
+        id: deviceId,
+        restaurantId,
+        deviceName,
+      },
     });
-
-    // If device doesn't exist, create it
-    if (!device) {
-      device = await prisma.device.create({
-        data: {
-          id: deviceId,
-          restaurantId,
-          deviceName,
-        },
-      });
-    }
 
     return NextResponse.json(device);
   } catch (error) {
     console.error("Device registration error:", error);
+
     return NextResponse.json(
-      { error: String(error) },
+      {
+        error:
+          error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
@@ -68,8 +71,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(device);
   } catch (error) {
     console.error("Fetch device error:", error);
+
     return NextResponse.json(
-      { error: String(error) },
+      {
+        error:
+          error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

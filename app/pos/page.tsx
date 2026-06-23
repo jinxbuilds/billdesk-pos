@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
-import { getOrCreateDeviceId, registerDevice } from "@/lib/device";
+import { registerDevice } from "@/lib/device";
 import { useOfflineSync } from "@/lib/offline";
 import { saveBillOffline, updateBillStatus } from "@/lib/indexeddb";
-
+import {AuthGuard} from "@/components/AuthGuard";
 type MenuItem = {
   id: string;
   name: string;
@@ -20,9 +20,6 @@ type CartItem = {
   qty: number;
 };
 
-// TODO: Get these from login
-const STAFF_ID = "cmqozgzvm0001chv4i7jrro1x";
-const RESTAURANT_ID = "cmqozgzvm0000chv476atrllj";
 
 export default function PosPage() {
   const [menu, setMenu] = useState<MenuItem[]>([]);
@@ -30,20 +27,59 @@ export default function PosPage() {
   const [saving, setSaving] = useState(false);
   const [deviceId, setDeviceId] = useState<string>("");
   const [paymentMode, setPaymentMode] = useState<"CASH" | "UPI">("UPI");
+  const [staffId, setStaffId] = useState("");
+  const [restaurantId, setRestaurantId] = useState("");
+  const [sessionLoaded, setSessionLoaded] = useState(false);
   const { syncStatus, pendingCount, syncPendingBills } = useOfflineSync();
 
   useEffect(() => {
-    // Register device on first load
-    registerDevice(RESTAURANT_ID).then((id) => {
-      setDeviceId(id);
-    });
+  const session = localStorage.getItem("pos-session");
 
-    // Fetch menu
-    fetch("/api/menu")
-      .then((res) => res.json())
-      .then((data) => setMenu(data))
-      .catch(console.error);
-  }, []);
+  if (!session) {
+    window.location.href = "/login";
+    return;
+  }
+
+  const parsed = JSON.parse(session);
+
+  setStaffId(parsed.staffId);
+  setRestaurantId(parsed.restaurantId);
+  setSessionLoaded(true);
+}, []);
+
+useEffect(() => {
+  if (!restaurantId) return;
+
+  const loadMenu = async () => {
+    try {
+      const response = await fetch("/api/menu");
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        setMenu(data);
+      } else {
+        console.error("Invalid menu response:", data);
+        setMenu([]);
+      }
+    } catch (error) {
+  console.error("Failed to load menu:", error);
+
+  setMenu([]);
+
+  alert(
+    "Menu could not be loaded. Connect to the internet once to sync menu items."
+  );
+}
+  };
+
+  loadMenu();
+}, [restaurantId]);
+
 
   const addToCart = (item: MenuItem) => {
     setCart((prev) => {
@@ -75,6 +111,16 @@ export default function PosPage() {
   );
 
   const saveBill = async () => {
+    if (!staffId || !restaurantId) {
+      alert("Session expired. Please login again.");
+      return;
+    }
+
+    if (!deviceId) {
+      alert("Device registration still in progress.");
+      return;
+    }
+
     if (cart.length === 0) {
       alert("Cart is empty");
       return;
@@ -85,9 +131,9 @@ export default function PosPage() {
 
       const clientBillId = uuidv4();
       const billData = {
-        restaurantId: RESTAURANT_ID,
+        restaurantId: restaurantId,
         deviceId: deviceId,
-        staffId: STAFF_ID,
+        staffId: staffId,
         paymentMode: paymentMode,
         items: cart.map((item) => ({
           id: item.id,
@@ -103,9 +149,9 @@ export default function PosPage() {
         await saveBillOffline({
           id: clientBillId,
           clientBillId,
-          restaurantId: RESTAURANT_ID,
+          restaurantId: restaurantId,
           deviceId: deviceId,
-          staffId: STAFF_ID,
+          staffId: staffId,
           paymentMode: paymentMode,
           items: cart.map((item) => ({
             id: item.id,
@@ -147,9 +193,9 @@ export default function PosPage() {
         await saveBillOffline({
           id: clientBillId,
           clientBillId,
-          restaurantId: RESTAURANT_ID,
+          restaurantId: restaurantId,
           deviceId: deviceId,
-          staffId: STAFF_ID,
+          staffId: staffId,
           paymentMode: paymentMode,
           items: cart.map((item) => ({
             id: item.id,
@@ -172,9 +218,9 @@ export default function PosPage() {
         await saveBillOffline({
           id: clientBillId,
           clientBillId,
-          restaurantId: RESTAURANT_ID,
+          restaurantId: restaurantId,
           deviceId: deviceId,
-          staffId: STAFF_ID,
+          staffId: staffId,
           paymentMode: paymentMode,
           items: cart.map((item) => ({
             id: item.id,
@@ -196,6 +242,14 @@ export default function PosPage() {
     }
   };
 
+  if (!sessionLoaded) {
+  return (
+    <main className="p-6">
+      Loading...
+    </main>
+  );
+}
+
   return (
     <main className="p-6 max-w-4xl mx-auto">
       {/* Navigation */}
@@ -206,6 +260,7 @@ export default function PosPage() {
         >
           Dashboard
         </Link>
+        
         <Link
           href="/pos"
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -229,6 +284,7 @@ export default function PosPage() {
       <h1 className="text-3xl font-bold mb-6">
         Restaurant POS
       </h1>
+      
 
       {/* Sync Status Bar */}
       <div className="mb-6 p-4 rounded-lg border flex items-center justify-between">
@@ -361,6 +417,8 @@ export default function PosPage() {
             >
               {saving ? "Saving..." : "Save Bill"}
             </button>
+
+            
           </>
         )}
       </div>

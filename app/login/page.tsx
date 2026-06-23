@@ -1,17 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
+type DeviceInfo = {
+  deviceId: string;
+  restaurantId: string;
+  restaurantName: string;
+  deviceName: string;
+};
 
 export default function LoginPage() {
   const router = useRouter();
-  const [restaurantId, setRestaurantId] = useState("");
+
+  const [device, setDevice] = useState<DeviceInfo | null>(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const savedDevice = localStorage.getItem("pos_device");
+
+    if (!savedDevice) {
+      router.push("/setup");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(savedDevice);
+      setDevice(parsed);
+    } catch {
+      localStorage.removeItem("pos_device");
+      router.push("/setup");
+    }
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!device) return;
+
     setError("");
     setLoading(true);
 
@@ -22,7 +50,7 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          restaurantId,
+          deviceId: device.deviceId,
           pin,
         }),
       });
@@ -34,60 +62,58 @@ export default function LoginPage() {
         return;
       }
 
-      // Store user info in localStorage
-      localStorage.setItem("staffId", data.staffId);
-      localStorage.setItem("restaurantId", data.restaurantId);
+      localStorage.setItem(
+  "pos-session",
+  JSON.stringify({
+    staffId: data.staffId,
+    restaurantId: data.restaurantId,
+  })
+);
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      router.push("/pos");
     } catch (err) {
-      setError("An error occurred. Please try again.");
       console.error(err);
+      setError("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (!device) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Restaurant POS
+        <h1 className="text-2xl font-bold text-center text-gray-800">
+          {device.restaurantName}
         </h1>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="restaurantId"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Restaurant ID
-            </label>
-            <input
-              type="text"
-              id="restaurantId"
-              value={restaurantId}
-              onChange={(e) => setRestaurantId(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter restaurant ID"
-              required
-            />
-          </div>
+        <p className="text-center text-gray-500 mb-6">
+          {device.deviceName}
+        </p>
 
+        <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label
               htmlFor="pin"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              PIN
+              Owner PIN
             </label>
+
             <input
               type="password"
               id="pin"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter your PIN"
+              placeholder="Enter PIN"
               required
             />
           </div>

@@ -42,6 +42,7 @@ export default function DashboardPage() {
         >
           Dashboard
         </Link>
+        
         <Link
           href="/pos"
           className="px-4 py-2 border rounded hover:bg-gray-100"
@@ -60,6 +61,15 @@ export default function DashboardPage() {
         >
           Reports
         </Link>
+        <button
+  onClick={() => {
+    localStorage.removeItem("pos-session");
+    window.location.href = "/login";
+  }}
+  className="px-3 py-2 rounded border hover:bg-red-100"
+>
+  Logout
+</button>
       </nav>
 
       <h1 className="text-3xl md:text-4xl font-bold mb-8">Dashboard</h1>
@@ -74,7 +84,7 @@ export default function DashboardPage() {
               Total Sales Today
             </div>
             <div className="text-2xl md:text-3xl font-bold text-green-600">
-              ₹{reports.totalSales.toFixed(2)}
+              ₹{(reports?.totalSales ?? 0).toFixed(2)}
             </div>
           </div>
 
@@ -94,7 +104,7 @@ export default function DashboardPage() {
               Cash Sales
             </div>
             <div className="text-2xl md:text-3xl font-bold text-purple-600">
-              ₹{reports.cashSales.toFixed(2)}
+              ₹{(reports?.cashSales ?? 0).toFixed(2)}
             </div>
           </div>
 
@@ -104,7 +114,7 @@ export default function DashboardPage() {
               UPI Sales
             </div>
             <div className="text-2xl md:text-3xl font-bold text-orange-600">
-              ₹{reports.upiSales.toFixed(2)}
+              ₹{(reports?.upiSales ?? 0).toFixed(2)}
             </div>
           </div>
 
@@ -114,7 +124,7 @@ export default function DashboardPage() {
               Average Bill Value
             </div>
             <div className="text-2xl md:text-3xl font-bold text-indigo-600">
-              ₹{reports.averageBill.toFixed(2)}
+              ₹{(reports?.averageBill ?? 0).toFixed(2)}
             </div>
           </div>
         </div>
@@ -122,6 +132,7 @@ export default function DashboardPage() {
         <p className="text-center text-gray-600">
           Failed to load reports
         </p>
+        
       )}
     </main>
   );

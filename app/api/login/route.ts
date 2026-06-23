@@ -4,13 +4,29 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { restaurantId, pin } = await req.json();
-    if (!restaurantId || !pin) {
-  return NextResponse.json(
-    { error: "Restaurant ID and PIN are required" },
-    { status: 400 }
-  );
-}
+    const { deviceId, pin } = await req.json();
+
+    if (!deviceId || !pin) {
+      return NextResponse.json(
+        { error: "Device ID and PIN are required" },
+        { status: 400 }
+      );
+    }
+
+    const device = await prisma.device.findUnique({
+      where: {
+        id: deviceId,
+      },
+    });
+
+    if (!device) {
+      return NextResponse.json(
+        { error: "Device not found" },
+        { status: 404 }
+      );
+    }
+
+    const restaurantId = device.restaurantId;
 
     const owner = await prisma.staff.findFirst({
       where: {
@@ -22,12 +38,15 @@ export async function POST(req: Request) {
 
     if (!owner) {
       return NextResponse.json(
-        { error: "Restaurant not found" },
+        { error: "Owner account not found" },
         { status: 404 }
       );
     }
 
-    const valid = await bcrypt.compare(pin, owner.pinHash);
+    const valid = await bcrypt.compare(
+      pin,
+      owner.pinHash
+    );
 
     if (!valid) {
       return NextResponse.json(
@@ -40,6 +59,8 @@ export async function POST(req: Request) {
       success: true,
       staffId: owner.id,
       restaurantId,
+      deviceId: device.id,
+      deviceName: device.deviceName,
     });
   } catch (error) {
     console.error("LOGIN ERROR:", error);
