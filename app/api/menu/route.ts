@@ -7,6 +7,9 @@ export async function GET() {
       where: {
         active: true,
       },
+      orderBy: {
+        name: "asc",
+      },
     });
 
     return NextResponse.json(menu);
@@ -16,5 +19,38 @@ export async function GET() {
     return NextResponse.json([], {
       status: 200,
     });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+
+    const { restaurantId, name, price, category } = body;
+
+    if (!restaurantId || !name || !price || !category) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const item = await prisma.menuItem.create({
+      data: {
+        restaurantId,
+        name,
+        price,
+        category,
+      },
+    });
+
+    return NextResponse.json(item, { status: 201 });
+  } catch (error) {
+    console.error("Menu create error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to create menu item" },
+      { status: 500 }
+    );
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type ReportData = {
   totalSales: number;
@@ -14,10 +15,28 @@ type ReportData = {
 export default function DashboardPage() {
   const [reports, setReports] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
+  const [pressTimer, setPressTimer] = useState<NodeJS.Timeout | null>(null);
+  
+  
   useEffect(() => {
     fetchReports();
   }, []);
+
+  const handlePressStart = () => {
+  const timer = setTimeout(() => {
+    router.push("/dashboard/menu");
+  }, 2000); // 2 second long press
+
+  setPressTimer(timer);
+};
+
+const handlePressEnd = () => {
+  if (pressTimer) {
+    clearTimeout(pressTimer);
+    setPressTimer(null);
+  }
+};
 
   const fetchReports = async () => {
     try {
@@ -134,6 +153,19 @@ export default function DashboardPage() {
         </p>
         
       )}
+
+          <div className="fixed bottom-3 left-1/2 -translate-x-1/2">
+  <button
+    onMouseDown={handlePressStart}
+    onMouseUp={handlePressEnd}
+    onMouseLeave={handlePressEnd}
+    onTouchStart={handlePressStart}
+    onTouchEnd={handlePressEnd}
+    className="text-xs text-gray-400 hover:text-gray-600 px-3 py-1"
+  >
+    POS v1.0
+  </button>
+</div>
     </main>
   );
 }

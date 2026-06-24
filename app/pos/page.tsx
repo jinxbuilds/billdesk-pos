@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import { registerDevice } from "@/lib/device";
+import { getOrCreateDeviceId } from "@/lib/device";
 import { useOfflineSync } from "@/lib/offline";
 import { saveBillOffline, updateBillStatus } from "@/lib/indexeddb";
 import {AuthGuard} from "@/components/AuthGuard";
@@ -38,14 +39,33 @@ export default function PosPage() {
   if (!session) {
     window.location.href = "/login";
     return;
-  }
-
+  } 
   const parsed = JSON.parse(session);
 
   setStaffId(parsed.staffId);
   setRestaurantId(parsed.restaurantId);
   setSessionLoaded(true);
 }, []);
+
+useEffect(() => {
+  if (!restaurantId) return;
+
+  const setupDevice = async () => {
+    try {
+      const localId = getOrCreateDeviceId();
+
+      console.log("Local Device ID:", localId);
+
+      await registerDevice(restaurantId);
+
+      setDeviceId(localId);
+    } catch (error) {
+      console.error("Device registration failed:", error);
+    }
+  };
+
+  setupDevice();
+}, [restaurantId]);
 
 useEffect(() => {
   if (!restaurantId) return;
@@ -117,7 +137,11 @@ useEffect(() => {
     }
 
     if (!deviceId) {
-      alert("Device registration still in progress.");
+      <button
+  disabled={!deviceId || saving}
+>
+  Save Bill
+</button>
       return;
     }
 
