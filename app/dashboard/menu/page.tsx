@@ -8,6 +8,7 @@ type MenuItem = {
   price: number;
   category: string;
   active: boolean;
+  favorite: boolean;
 };
 
 export default function MenuManagementPage() {
@@ -66,6 +67,35 @@ export default function MenuManagementPage() {
       alert(error.error);
     }
   }
+  const toggleFavorite = async (id: string) => {
+  try {
+    const res = await fetch(
+      `/api/menu/${id}/favorite`,
+      {
+        method: "PATCH",
+      }
+    );
+
+    if (!res.ok) {
+  const error = await res.json();
+  console.error(error);
+  throw new Error(error.error || "Failed");
+}
+
+    setMenu((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              favorite: !item.favorite,
+            }
+          : item
+      )
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   async function updateItem() {
     if (!editingId) return;
@@ -190,21 +220,28 @@ export default function MenuManagementPage() {
               )}
             </div>
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => startEdit(item)}
-                className="px-3 py-1 border rounded"
-              >
-                Edit
-              </button>
+            <div className="flex gap-2 items-center">
+  <button
+    onClick={() => toggleFavorite(item.id)}
+    className="text-xl"
+  >
+    {item.favorite ? "⭐" : "☆"}
+  </button>
 
-              <button
-                onClick={() => toggleItem(item)}
-                className="px-3 py-1 border rounded"
-              >
-                {item.active ? "Disable" : "Enable"}
-              </button>
-            </div>
+  <button
+    onClick={() => startEdit(item)}
+    className="px-3 py-1 border rounded"
+  >
+    Edit
+  </button>
+
+  <button
+    onClick={() => toggleItem(item)}
+    className="px-3 py-1 border rounded"
+  >
+    {item.active ? "Disable" : "Enable"}
+  </button>
+</div>
           </div>
         ))}
       </div>

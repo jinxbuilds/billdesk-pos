@@ -90,6 +90,7 @@ model MenuItem {
   name      String
   price     Decimal  @db.Decimal(10, 2)
   category  String // flat string, no nesting — matches MVP design
+  favorite  Boolean  @default(false)
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

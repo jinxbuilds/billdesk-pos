@@ -7,9 +7,11 @@ export async function GET() {
       where: {
         active: true,
       },
-      orderBy: {
-        name: "asc",
-      },
+      orderBy: [
+        { favorite: "desc" },
+        { category: "asc" },
+        { name: "asc" },
+      ],
     });
 
     return NextResponse.json(menu);
