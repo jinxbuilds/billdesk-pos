@@ -88,50 +88,162 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800">
-          {device.restaurantName}
-        </h1>
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="
+  w-full
+  max-w-md
+  bg-zinc-900
+  border
+  border-zinc-800
+  rounded-3xl
+  shadow-2xl
+  p-8
+">
+  {/* Header */}
+        <div className="text-center mb-8">
+  <div className="text-5xl mb-4">🍽️</div>
 
-        <p className="text-center text-gray-500 mb-6">
-          {device.deviceName}
-        </p>
+  <h1 className="text-3xl font-bold text-white">
+    {device.restaurantName}
+  </h1>
+
+  <p className="text-zinc-400 mt-2">
+    {device.deviceName}
+  </p>
+</div>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <label
-              htmlFor="pin"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Owner PIN
-            </label>
 
-            <input
-              type="password"
-              id="pin"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter PIN"
-              required
-            />
-          </div>
+       <div className="text-center mb-6">
+  <span className="text-zinc-400 text-sm uppercase tracking-widest">
+    Owner Access
+  </span>
+</div>   
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
+  {/* PIN Dots */}
+  <div className="flex justify-center gap-3 mb-8">
+  {[0,1,2,3,4,5].map((i) => (
+    <div
+      key={i}
+      className={`
+        w-4 h-4 rounded-full
+        ${
+          i < pin.length
+            ? "bg-green-500"
+            : "bg-zinc-700"
+        }
+      `}
+    />
+  ))}
+</div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white font-medium py-2 px-4 rounded-lg transition"
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+  {/* Hidden Input */}
+  <input
+    type="password"
+    value={pin}
+    onChange={(e) => setPin(e.target.value)}
+    className="hidden"
+  />
+
+  {/* Error */}
+  {error && (
+    <div className="mb-6 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-center">
+      {error}
+    </div>
+  )}
+
+  {/* Number Pad */}
+  <div className="grid grid-cols-3 gap-3">
+    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+      <button
+        key={n}
+        type="button"
+        onClick={() => {
+          if (pin.length < 6) {
+            setPin((prev) => prev + n);
+          }
+        }}
+        className="
+  h-20
+  rounded-2xl
+  bg-zinc-800
+  hover:bg-zinc-700
+  active:scale-95
+  text-3xl
+  font-bold
+  text-white
+  transition
+"
+      >
+        {n}
+      </button>
+    ))}
+
+    {/* Backspace */}
+    <button
+      type="button"
+      onClick={() => setPin((prev) => prev.slice(0, -1))}
+      className="
+        h-20
+  rounded-2xl
+  bg-red-600
+  hover:bg-red-700
+  text-white
+  text-xl
+  font-bold
+      "
+    >
+      ⌫
+    </button>
+
+    {/* Zero */}
+    <button
+      type="button"
+      onClick={() => {
+        if (pin.length < 6) {
+          setPin((prev) => prev + "0");
+        }
+      }}
+      className="
+        h-20
+  rounded-2xl
+  bg-zinc-800
+  hover:bg-zinc-700
+  active:scale-95
+  text-3xl
+  font-bold
+  text-white
+  transition
+      "
+    >
+      0
+    </button>
+
+    {/* Login */}
+    <button
+      type="submit"
+      disabled={loading || pin.length < 4}
+      className="
+        h-20
+        rounded-2xl
+        bg-green-600
+        hover:bg-green-700
+        text-white
+        text-xl
+        font-bold
+        transition
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        "
+    >
+      {loading ? "..." : "→"}
+    </button>
+  </div>
+
+  <div className="mt-6 text-center text-sm text-slate-500">
+    Enter Owner PIN
+  </div>
+</form>
       </div>
     </div>
   );

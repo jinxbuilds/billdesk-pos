@@ -84,115 +84,197 @@ export default function ReceiptPage() {
   const formattedTime = billDate.toLocaleTimeString();
 
   return (
-    <>
-      <style>{`
-        @media print {
-          body {
-            margin: 0;
-            padding: 0;
-          }
-          .no-print {
-            display: none;
-          }
-          .receipt-container {
-            max-width: 58mm;
-            margin: 0;
-            padding: 0;
-          }
-        }
-      `}</style>
+   <>
 
-      <main className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
-        <div className="w-full max-w-xs">
-          {/* Print Button - Hidden on Print */}
-          <div className="no-print mb-4 flex gap-2">
-            <button
-              onClick={handlePrint}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Print Receipt
-            </button>
-            <button
-              onClick={() => window.history.back()}
-              className="flex-1 px-4 py-2 border rounded hover:bg-gray-100"
-            >
-              Back
-            </button>
+  <style>{`
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+        background: white;
+      }
+
+      .no-print {
+        display: none;
+      }
+
+      .receipt-container {
+        max-width: 58mm;
+        margin: 0 auto;
+        padding: 0;
+        box-shadow: none;
+        border: none;
+      }
+    }
+  `}</style>
+
+  <main className="min-h-screen bg-gray-950 flex items-center justify-center p-6">
+    <div className="w-full max-w-sm">
+
+```
+  {/* Action Buttons */}
+  <div className="no-print mb-4 flex gap-3">
+    <button
+      onClick={handlePrint}
+      className="
+        flex-1
+        py-3
+        rounded-xl
+        bg-red-500
+        hover:bg-red-600
+        text-white
+        font-semibold
+        transition
+      "
+    >
+      🖨 Print
+    </button>
+
+    <button
+      onClick={() => window.history.back()}
+      className="
+        flex-1
+        py-3
+        rounded-xl
+        bg-gray-800
+        hover:bg-gray-700
+        text-white
+        font-semibold
+        transition
+      "
+    >
+      ← Back
+    </button>
+  </div>
+
+  {/* Receipt */}
+  <div
+    className="
+      receipt-container
+      bg-white
+      rounded-xl
+      shadow-2xl
+      p-5
+      font-mono
+      text-sm
+      text-black
+    "
+  >
+    {/* Header */}
+    <div className="text-center border-b border-gray-300 pb-4 mb-4">
+      <h1 className="text-xl font-bold">
+        {bill.restaurant.name}
+      </h1>
+
+      <p className="text-xs text-gray-500 mt-1">
+        RECEIPT
+      </p>
+    </div>
+
+    {/* Bill Info */}
+    <div className="border-b border-gray-300 pb-3 mb-3 text-xs">
+      <div className="flex justify-between">
+        <span>Bill #</span>
+        <span className="font-bold">
+          {bill.billNumber}
+        </span>
+      </div>
+
+      <div className="flex justify-between mt-1">
+        <span>Date</span>
+        <span>{formattedDate}</span>
+      </div>
+
+      <div className="flex justify-between mt-1">
+        <span>Time</span>
+        <span>{formattedTime}</span>
+      </div>
+
+      <div className="flex justify-between mt-1">
+        <span>Payment</span>
+        <span className="font-bold">
+          {bill.paymentMode}
+        </span>
+      </div>
+    </div>
+
+    {/* Items Header */}
+    <div className="border-b border-gray-300 pb-2 mb-2 text-xs font-bold">
+      <div className="flex justify-between">
+        <span>Item</span>
+        <span>Qty × Price</span>
+      </div>
+    </div>
+
+    {/* Items */}
+    <div className="border-b border-gray-300 pb-3 mb-3">
+      {bill.items.map((item) => (
+        <div
+          key={item.id}
+          className="text-xs mb-3"
+        >
+          <div className="font-semibold">
+            {item.itemName}
           </div>
 
-          {/* Receipt Container - Thermal Printer Style */}
-          <div className="receipt-container bg-white border border-gray-300 p-4 font-mono text-sm">
-            {/* Header */}
-            <div className="text-center border-b border-gray-300 pb-3 mb-3">
-              <h1 className="text-lg font-bold">{bill.restaurant.name}</h1>
-              <p className="text-xs text-gray-600 mt-1">RECEIPT</p>
-            </div>
+          <div className="flex justify-between text-gray-700">
+            <span>
+              {item.qty} × ₹
+              {parseFloat(item.price).toFixed(2)}
+            </span>
 
-            {/* Bill Details */}
-            <div className="border-b border-gray-300 pb-3 mb-3 text-xs">
-              <div className="flex justify-between">
-                <span>Bill #:</span>
-                <span className="font-bold">{bill.billNumber}</span>
-              </div>
-              <div className="flex justify-between mt-1">
-                <span>Date:</span>
-                <span>{formattedDate}</span>
-              </div>
-              <div className="flex justify-between mt-1">
-                <span>Time:</span>
-                <span>{formattedTime}</span>
-              </div>
-              <div className="flex justify-between mt-1">
-                <span>Payment:</span>
-                <span className="font-bold">{bill.paymentMode}</span>
-              </div>
-            </div>
-
-            {/* Items Header */}
-            <div className="border-b border-gray-300 pb-2 mb-2 text-xs font-bold">
-              <div className="flex justify-between">
-                <span>Item</span>
-                <span className="text-right">Qty × Price</span>
-              </div>
-            </div>
-
-            {/* Items List */}
-            <div className="border-b border-gray-300 pb-3 mb-3">
-              {bill.items.map((item) => (
-                <div key={item.id} className="text-xs mb-2">
-                  <div className="font-semibold">{item.itemName}</div>
-                  <div className="flex justify-between text-gray-700">
-                    <span>
-                      {item.qty} × ₹{parseFloat(item.price).toFixed(2)}
-                    </span>
-                    <span className="font-semibold">
-                      ₹{parseFloat(item.lineTotal).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Total */}
-            <div className="text-center border-t-2 border-gray-300 pt-3">
-              <div className="flex justify-between text-sm font-bold mb-2">
-                <span>TOTAL</span>
-                <span>₹{parseFloat(bill.totalAmount).toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="text-center mt-4 pt-3 border-t border-gray-300">
-              <p className="text-xs text-gray-600">
-                Thank you for your purchase!
-              </p>
-              <p className="text-xs text-gray-600 mt-1">
-                Please visit again
-              </p>
-            </div>
+            <span className="font-semibold">
+              ₹
+              {parseFloat(
+                item.lineTotal
+              ).toFixed(2)}
+            </span>
           </div>
         </div>
-      </main>
-    </>
-  );
+      ))}
+    </div>
+
+    {/* Summary */}
+    <div className="border-b border-gray-300 pb-3 mb-3">
+      <div className="flex justify-between text-xs">
+        <span>Total Items</span>
+        <span>
+          {bill.items.reduce(
+            (sum, item) => sum + item.qty,
+            0
+          )}
+        </span>
+      </div>
+    </div>
+
+    {/* Total */}
+    <div className="border-t-2 border-black pt-3">
+      <div className="flex justify-between text-lg font-bold">
+        <span>TOTAL</span>
+        <span>
+          ₹
+          {parseFloat(
+            bill.totalAmount
+          ).toFixed(2)}
+        </span>
+      </div>
+    </div>
+
+    {/* Footer */}
+    <div className="text-center mt-6 pt-4 border-t border-gray-300">
+      <p className="text-xs">
+        Thank You For Visiting
+      </p>
+
+      <p className="text-xs mt-1 text-gray-500">
+        Please Visit Again
+      </p>
+    </div>
+  </div>
+</div>
+```
+
+  </main>
+</>
+);
 }

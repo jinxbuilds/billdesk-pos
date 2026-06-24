@@ -142,109 +142,202 @@ export default function MenuManagementPage() {
     setCategory(item.category);
   }
 
-  return (
-    <main className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">
-        Menu Management
-      </h1>
 
-      <div className="border rounded-lg p-4 mb-6 bg-white">
-        <h2 className="font-semibold mb-4">
-          {editingId ? "Edit Item" : "Add Item"}
-        </h2>
+return (
+  <main className="max-w-5xl mx-auto p-4">
+    <h1 className="text-3xl font-bold mb-2 text-white">
+      Menu Management
+    </h1>
 
-        <div className="grid gap-3">
-          <input
-            className="border rounded p-2"
-            placeholder="Item Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+    <p className="text-slate-400 mb-8">
+      Add, edit and manage menu items
+    </p>
 
-          <input
-            className="border rounded p-2"
-            placeholder="Price"
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
+    {/* Add / Edit Form */}
 
-          <input
-            className="border rounded p-2"
-            placeholder="Category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          />
+    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 mb-8 shadow-lg">
+      <h2 className="text-xl font-semibold text-white mb-5">
+        {editingId ? "Edit Item" : "Add Item"}
+      </h2>
 
-          {editingId ? (
-            <button
-              onClick={updateItem}
-              className="bg-blue-600 text-white rounded p-2"
-            >
-              Update Item
-            </button>
-          ) : (
-            <button
-              onClick={addMenuItem}
-              className="bg-green-600 text-white rounded p-2"
-            >
-              Add Item
-            </button>
-          )}
-        </div>
-      </div>
+      <div className="grid gap-4">
+        <input
+          className="
+            bg-slate-800
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            placeholder:text-slate-500
+          "
+          placeholder="Item Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-      <div className="space-y-3">
-        {menu.map((item) => (
-          <div
-            key={item.id}
-            className="border rounded-lg p-4 flex justify-between items-center"
+        <input
+          className="
+            bg-slate-800
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            placeholder:text-slate-500
+          "
+          placeholder="Price"
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+
+        <input
+          className="
+            bg-slate-800
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            text-white
+            placeholder:text-slate-500
+          "
+          placeholder="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+
+        {editingId ? (
+          <button
+            onClick={updateItem}
+            className="
+              bg-cyan-600
+              hover:bg-cyan-700
+              text-white
+              rounded-xl
+              py-3
+              font-medium
+              transition
+            "
           >
-            <div>
-              <h3 className="font-semibold">
-                {item.name}
-              </h3>
-
-              <p className="text-sm text-gray-500">
-                ₹{item.price}
-              </p>
-
-              <p className="text-xs text-gray-400">
-                {item.category}
-              </p>
-
-              {!item.active && (
-                <span className="text-red-500 text-xs">
-                  Disabled
-                </span>
-              )}
-            </div>
-
-            <div className="flex gap-2 items-center">
-  <button
-    onClick={() => toggleFavorite(item.id)}
-    className="text-xl"
-  >
-    {item.favorite ? "⭐" : "☆"}
-  </button>
-
-  <button
-    onClick={() => startEdit(item)}
-    className="px-3 py-1 border rounded"
-  >
-    Edit
-  </button>
-
-  <button
-    onClick={() => toggleItem(item)}
-    className="px-3 py-1 border rounded"
-  >
-    {item.active ? "Disable" : "Enable"}
-  </button>
-</div>
-          </div>
-        ))}
+            Update Item
+          </button>
+        ) : (
+          <button
+            onClick={addMenuItem}
+            className="
+              bg-orange-500
+              hover:bg-orange-600
+              text-white
+              rounded-xl
+              py-3
+              font-medium
+              transition
+            "
+          >
+            Add Item
+          </button>
+        )}
       </div>
-    </main>
-  );
+    </div>
+
+    {/* Menu Items */}
+
+    <div className="space-y-4">
+      {menu.map((item) => (
+        <div
+          key={item.id}
+          className="
+            bg-slate-900
+            border
+            border-slate-800
+            rounded-2xl
+            p-5
+            flex
+            justify-between
+            items-center
+            hover:border-slate-700
+            transition
+          "
+        >
+          <div>
+            <h3 className="font-semibold text-white text-lg">
+              {item.name}
+            </h3>
+
+            <p className="text-emerald-400 font-medium mt-1">
+              ₹{item.price}
+            </p>
+
+            <p className="text-slate-400 text-sm">
+              {item.category}
+            </p>
+
+            {!item.active && (
+              <span className="
+                inline-block
+                mt-2
+                px-2
+                py-1
+                rounded-full
+                bg-red-500/20
+                text-red-400
+                text-xs
+              ">
+                Disabled
+              </span>
+            )}
+          </div>
+
+          <div className="flex gap-2 items-center">
+            <button
+              onClick={() => toggleFavorite(item.id)}
+              className="
+                h-10
+                w-10
+                rounded-xl
+                bg-slate-800
+                hover:bg-slate-700
+                text-xl
+              "
+            >
+              {item.favorite ? "⭐" : "☆"}
+            </button>
+
+            <button
+              onClick={() => startEdit(item)}
+              className="
+                px-4
+                py-2
+                rounded-xl
+                bg-slate-800
+                text-white
+                hover:bg-slate-700
+              "
+            >
+              Edit
+            </button>
+
+            <button
+              onClick={() => toggleItem(item)}
+              className="
+                px-4
+                py-2
+                rounded-xl
+                bg-orange-500
+                hover:bg-orange-600
+                text-white
+              "
+            >
+              {item.active ? "Disable" : "Enable"}
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </main>
+);
 }

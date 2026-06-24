@@ -8,6 +8,8 @@ import { getOrCreateDeviceId } from "@/lib/device";
 import { useOfflineSync } from "@/lib/offline";
 import { saveBillOffline, updateBillStatus } from "@/lib/indexeddb";
 import {AuthGuard} from "@/components/AuthGuard";
+import { navButtonClass } from "@/lib/ui";
+import PageHeader from "../components/PageHeader";
 type MenuItem = {
   id: string;
   name: string;
@@ -314,40 +316,49 @@ const groupedItems = filteredItems.reduce(
 
 
   return (
-    <main className="p-6 pb-28 max-w-4xl mx-auto">
+    <main
+  className="
+    min-h-screen
+    bg-gray-950
+    text-white
+    p-6
+    pb-32
+    max-w-5xl
+    mx-auto
+  "
+>
+      <PageHeader
+  title="Hotel MH 11"
+  subtitle="Create bills and manage orders"
+/>
       {/* Navigation */}
-      <nav className="mb-8 flex gap-4 flex-wrap">
+      <nav className="mb-8 flex gap-4 justify-center flex-wrap">
         <Link
-          href="/dashboard"
-          className="px-4 py-2 border rounded hover:bg-gray-100"
-        >
+        href="/dashboard"
+        className={navButtonClass}
+>
           Dashboard
         </Link>
         
         <Link
           href="/pos"
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className={navButtonClass}
         >
-          POS
+          Sales
         </Link>
         <Link
           href="/bills"
-          className="px-4 py-2 border rounded hover:bg-gray-100"
+          className={navButtonClass}
         >
           Bills
         </Link>
         <Link
           href="/reports"
-          className="px-4 py-2 border rounded hover:bg-gray-100"
+          className={navButtonClass}
         >
           Reports
         </Link>
       </nav>
-
-      <h1 className="text-3xl font-bold mb-6">
-        Restaurant POS
-      </h1>
-      
 
       {/* Sync Status Bar */}
       <div className="mb-6 p-4 rounded-lg border flex items-center justify-between">
@@ -377,7 +388,16 @@ const groupedItems = filteredItems.reduce(
         {pendingCount > 0 && syncStatus !== "syncing" && (
           <button
             onClick={syncPendingBills}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+            className="
+              px-4
+              py-2
+              bg-emerald-600
+              hover:bg-emerald-700
+              rounded-xl
+              text-sm
+              font-medium
+              transition
+              "
           >
             Sync Now
           </button>
@@ -385,46 +405,91 @@ const groupedItems = filteredItems.reduce(
       </div>
 
       <>
-  {favorites.length > 0 && (
-    <div className="mb-6">
-  <h2 className="text-lg font-bold mb-3">
-    ⭐ Quick Items
-  </h2>
 
-      <div className="flex gap-3 overflow-x-auto pb-2">
-  {favorites.map((item) => (
-    <button
-      key={item.id}
-      onClick={() => addToCart(item)}
-      className="
-        min-w-[120px]
-        rounded-xl
-        border-2
-        border-blue-200
-        bg-white
-        p-3
-        shadow-sm
-        text-left
-      "
-    >
-      <div className="font-semibold text-gray-900">
-        {item.name}
-      </div>
+{favorites.length > 0 && (
+  <section className="mb-10">
+    <div className="flex items-center justify-between mb-6">
+  <div>
+    <h2 className="text-xl font-bold text-white mb-1">
+      Quick Items
+    </h2>
 
-      <div className="text-lg font-bold text-blue-600">
-        ₹{item.price}
-      </div>
-    </button>
-  ))}
+    <p className="text-sm text-gray-400">
+      Most frequently ordered items
+    </p>
+  </div>
+
+  <div
+    className="
+      px-3
+      py-1
+      rounded-full
+      bg-amber-500/10
+      border
+      border-amber-500/20
+      shrink-0
+    "
+  >
+    <span className="text-xs font-medium text-amber-400">
+      Favorites
+    </span>
+  </div>
 </div>
+
+    <div className="flex gap-4 overflow-x-auto pt-2 pb-3 scrollbar-hide">
+      {favorites.map((item) => (
+        <button
+  key={item.id}
+  onClick={() => addToCart(item)}
+  className="
+    min-w-[170px]
+    text-left
+    rounded-3xl
+    border
+    border-amber-500/20
+    bg-gradient-to-br
+    from-gray-900
+    to-gray-950
+    p-5
+    shadow-lg
+    hover:border-amber-500/60
+    hover:-translate-y-1
+    transition-all
+    duration-200
+  "
+>
+  <div className="font-semibold text-white text-lg mb-3 truncate">
+    {item.name}
+  </div>
+
+  <div className="text-2xl font-bold text-amber-400">
+    ₹{item.price}
+  </div>
+</button>
+      ))}
     </div>
-  )}
+  </section>
+)}
+
 
   <div className="space-y-8">
   {Object.entries(groupedItems).map(
     ([category, items]) => (
       <div key={category}>
-        <h2 className="text-xl font-bold mb-4 sticky top-0 bg-white py-2">
+        <h2
+  className="
+    sticky
+    top-0
+    z-10
+    bg-gray-950/90
+    backdrop-blur
+    py-3
+    mb-3
+    text-lg
+    font-semibold
+    text-amber-400
+  "
+>
           {category}
         </h2>
 
@@ -433,22 +498,24 @@ const groupedItems = filteredItems.reduce(
             <div
               key={item.id}
               className="
-                flex
-                justify-between
-                items-center
-                bg-white
-                border
-                rounded-xl
-                p-4
-                shadow-sm
-              "
+flex
+justify-between
+items-center
+bg-gray-900
+border
+border-gray-800
+rounded-2xl
+p-4
+hover:border-emerald-500
+transition
+"
             >
               <div>
-                <p className="font-medium">
+                <p className="font-medium text-white">
                   {item.name}
                 </p>
 
-                <p className="text-gray-500">
+                <p className="text-gray-400">
                   ₹{item.price}
                 </p>
               </div>
@@ -456,12 +523,15 @@ const groupedItems = filteredItems.reduce(
               <button
                 onClick={() => addToCart(item)}
                 className="
-                  bg-green-600
-                  text-white
-                  px-4
-                  py-2
-                  rounded-lg
-                "
+bg-emerald-600
+hover:bg-emerald-700
+text-white
+px-5
+py-2
+rounded-xl
+font-medium
+transition
+"
               >
                 Add
               </button>
@@ -478,25 +548,31 @@ const groupedItems = filteredItems.reduce(
 {cart.length > 0 && (
   <div
     className="
-      fixed
-      bottom-0
-      left-0
-      right-0
-      bg-black
-      text-white
-      p-4
-      flex
-      justify-between
-      items-center
-      z-40
-    "
+fixed
+bottom-4
+left-4
+right-4
+max-w-5xl
+mx-auto
+bg-gray-900
+border
+border-gray-800
+rounded-2xl
+px-5
+py-4
+flex
+justify-between
+items-center
+shadow-2xl
+z-40
+"
   >
     <div>
       <div className="font-semibold">
         {cartItemsCount} Items
       </div>
 
-      <div className="text-sm opacity-80">
+      <div className="text-xl font-bold text-emerald-400">
         ₹{total}
       </div>
     </div>
@@ -504,13 +580,14 @@ const groupedItems = filteredItems.reduce(
     <button
       onClick={() => setCartOpen(true)}
       className="
-        bg-green-600
-        hover:bg-green-700
-        px-4
-        py-2
-        rounded-lg
-        font-semibold
-      "
+bg-emerald-600
+hover:bg-emerald-700
+px-5
+py-3
+rounded-xl
+font-semibold
+transition
+"
     >
       View Cart
     </button>
@@ -524,32 +601,57 @@ const groupedItems = filteredItems.reduce(
     onClick={() => setCartOpen(false)}
   >
     <div
-      className="
-        absolute
-        bottom-0
-        left-0
-        right-0
-        bg-white
-        rounded-t-3xl
-        p-5
-        max-h-[75vh]
-        overflow-y-auto
-        animate-in
-        slide-in-from-bottom
-      "
+  className="
+    absolute
+    bottom-0
+    left-0
+    right-0
+    bg-gray-950
+    border-t
+    border-gray-800
+    rounded-t-[28px]
+    p-5
+    max-h-[85vh]
+    overflow-y-auto
+    animate-in
+    slide-in-from-bottom
+    shadow-2xl
+  "
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">
-          Cart
-        </h2>
+      {/* Drag Handle */}
+    <div className="flex justify-center mb-4">
+      <div className="w-12 h-1.5 rounded-full bg-gray-700" />
+    </div>
 
-        <button
-          onClick={() => setCartOpen(false)}
-          className="text-xl"
-        >
-          ✕
-        </button>
+      <div className="flex justify-between items-center mb-5">
+  <div>
+    <h2 className="text-2xl font-bold text-white">
+      Current Order
+    </h2>
+
+    <p className="text-sm text-gray-400">
+      {cartItemsCount} items
+    </p>
+  </div>
+
+         <button
+    onClick={() => setCartOpen(false)}
+    className="
+      w-10
+      h-10
+      rounded-xl
+      bg-gray-900
+      border
+      border-gray-800
+      flex
+      items-center
+      justify-center
+      text-gray-300
+    "
+  >
+    ✕
+  </button>
       </div>
 
       {cart.map((item) => {
@@ -557,16 +659,20 @@ const groupedItems = filteredItems.reduce(
           Number(item.price) * item.qty;
 
         return (
-          <div
-            key={item.id}
-            className="
-              flex
-              justify-between
-              items-center
-              py-3
-              border-b
-            "
-          >
+            <div
+              key={item.id}
+              className="
+                bg-gray-900
+                border
+                border-gray-800
+                rounded-2xl
+                p-4
+                mb-3
+                flex
+                justify-between
+                items-center
+              "
+            >
             <div>
               <div className="font-semibold">
                 {item.name}
@@ -590,7 +696,9 @@ const groupedItems = filteredItems.reduce(
                 −
               </button>
 
-              <span>{item.qty}</span>
+              <span className="font-semibold min-w-[24px] text-center">
+  {item.qty}
+</span>
 
               <button
                 onClick={() =>
@@ -599,7 +707,14 @@ const groupedItems = filteredItems.reduce(
                     item.qty + 1
                   )
                 }
-                className="border px-2 rounded"
+                className="
+w-8
+h-8
+rounded-lg
+bg-emerald-600
+hover:bg-emerald-700
+text-white
+"
               >
                 +
               </button>
@@ -608,60 +723,122 @@ const groupedItems = filteredItems.reduce(
         );
       })}
 
-      <div className="border-t mt-4 pt-4 font-bold text-lg">
-        Total: ₹{total}
-      </div>
+      {/* Sticky Checkout Section */}
+<div
+  className="
+    sticky
+    bottom-0
+    bg-gray-950
+    pt-4
+    pb-2
+    mt-6
+    border-t
+    border-gray-800
+  "
+>
+  {/* Order Summary */}
+  <div
+    className="
+      bg-gray-900
+      border
+      border-gray-800
+      rounded-2xl
+      p-4
+      mb-5
+    "
+  >
+    <div className="flex justify-between mb-2">
+      <span className="text-gray-400">
+        Items
+      </span>
 
-      {/* Payment Mode */}
-      <div className="mt-6 mb-4">
-        <p className="text-sm font-semibold mb-2">
-          Payment Mode
-        </p>
+      <span className="font-medium text-white">
+        {cartItemsCount}
+      </span>
+    </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={() =>
-              setPaymentMode("CASH")
-            }
-            className={`flex-1 py-3 rounded-lg ${
-              paymentMode === "CASH"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100"
-            }`}
-          >
-            💵 Cash
-          </button>
+    <div className="flex justify-between items-center">
+      <span className="text-gray-400">
+        Total
+      </span>
 
-          <button
-            onClick={() =>
-              setPaymentMode("UPI")
-            }
-            className={`flex-1 py-3 rounded-lg ${
-              paymentMode === "UPI"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100"
-            }`}
-          >
-            📱 UPI
-          </button>
+      <span className="text-2xl font-bold text-emerald-400">
+        ₹{total}
+      </span>
+    </div>
+  </div>
+
+  {/* Payment Mode */}
+  <div className="mb-5">
+    <p className="text-sm font-semibold text-gray-300 mb-3">
+      Payment Method
+    </p>
+
+    <div className="grid grid-cols-2 gap-3">
+      <button
+        onClick={() => setPaymentMode("CASH")}
+        className={`
+          rounded-2xl
+          p-4
+          border
+          transition
+          ${
+            paymentMode === "CASH"
+              ? "bg-emerald-600 border-emerald-500 text-white"
+              : "bg-gray-900 border-gray-800 text-gray-300"
+          }
+        `}
+      >
+
+        <div className="font-medium">
+          Cash
         </div>
-      </div>
+      </button>
 
       <button
-        onClick={saveBill}
-        disabled={saving}
-        className="
-          w-full
-          mt-4
-          bg-green-600
-          text-white
+        onClick={() => setPaymentMode("UPI")}
+        className={`
+          rounded-2xl
           p-4
-          rounded-xl
-          font-semibold
-        "
+          border
+          transition
+          ${
+            paymentMode === "UPI"
+              ? "bg-emerald-600 border-emerald-500 text-white"
+              : "bg-gray-900 border-gray-800 text-gray-300"
+          }
+        `}
       >
-        {saving ? "Saving..." : "Save Bill"}
+      
+        <div className="font-medium">
+          UPI
+        </div>
       </button>
+    </div>
+  </div>
+
+  {/* Save Bill */}
+  <button
+    onClick={saveBill}
+    disabled={saving}
+    className="
+      w-full
+      bg-emerald-600
+      hover:bg-emerald-700
+      text-white
+      p-5
+      rounded-2xl
+      font-bold
+      text-lg
+      shadow-lg
+      transition
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+    "
+  >
+    {saving ? "Saving Bill..." : `Save Bill • ₹${total}`}
+  </button>
+</div>
     </div>
   </div>
 )}
